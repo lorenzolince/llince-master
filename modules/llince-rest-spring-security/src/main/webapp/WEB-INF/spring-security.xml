@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:lang="http://www.springframework.org/schema/lang" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd		
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+    <security:global-method-security pre-post-annotations="enabled"  secured-annotations="enabled" />
+
+    <security:http entry-point-ref="restAuthenticationEntryPoint"  use-expressions="true" 
+                       access-denied-page="/accessdenied" create-session="ifRequired"
+                       auto-config="true" >
+    
+         <security:session-management>
+             <security:concurrency-control max-sessions="1" expired-url="/expiresession" /> 
+         </security:session-management>
+        <security:intercept-url pattern="/rest/login" access="permitAll()"  /> 
+        <security:intercept-url pattern="/index" access="permitAll()"  />
+        <security:intercept-url pattern="/rest/**" access="isAuthenticated()"  />
+        <security:intercept-url pattern="/service/admin/**" access="hasRole('ROLE_ADMIN')" />
+        <security:intercept-url pattern="/service/rest/**" access="hasAnyRole('ROLE_USER,ROLE_ADMIN')" />
+        <security:form-login  login-page="/spring_security_login" default-target-url="/welcome"
+                                      authentication-failure-url="/loginfailed" />
+        <security:logout invalidate-session="true"   logout-success-url="/service/logout"  />
+    </security:http> 
+   
+    <bean id="mySuccessHandler" class="com.llince.model.rest.security.MySavedRequestAwareAuthenticationSuccessHandler"/>
+    <bean id="myFailureHandler" class= "org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"/>
+ 
+   
+    <security:authentication-manager alias="authenticationManager"   >
+        <security:authentication-provider>
+            <security:password-encoder ref="passwordEncoder"/>
+            <security:jdbc-user-service data-source-ref="dataSource" 
+                
+                                            users-by-username-query="
+		      select  u.login, u.password , u.status as enabled		      
+		      from users u where u.login= ?"	      
+		   
+                                            authorities-by-username-query=" 
+		     select u.login ,r.name from users u ,roles r
+			where u.login= ?
+			and r.user_id =u.user_id " 
+ 
+            />
+                 
+        </security:authentication-provider>
+           
+    </security:authentication-manager>
+
+    <bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" id="passwordEncoder"/>
+  
+</beans>

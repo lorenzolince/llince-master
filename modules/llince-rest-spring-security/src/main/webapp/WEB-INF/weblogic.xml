@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd http://xmlns.oracle.com/weblogic/weblogic-web-app http://xmlns.oracle.com/weblogic/weblogic-web-app/1.0/weblogic-web-app.xsd">
+  <jsp-descriptor>
+    <keepgenerated>true</keepgenerated>
+    <debug>true</debug>
+    <page-check-seconds>60</page-check-seconds>
+    <precompile>true</precompile>
+    <precompile-continue>true</precompile-continue>
+  </jsp-descriptor>
+  <container-descriptor>
+    <prefer-web-inf-classes>true</prefer-web-inf-classes>
+    <optimistic-serialization>true</optimistic-serialization>
+    <show-archived-real-path-enabled>true</show-archived-real-path-enabled>
+  </container-descriptor>
+  <prefer-application-packages>
+    <package-name>org.springframework.*</package-name>
+    <package-name>net.sf.cglib.*</package-name>
+    <package-name>org.apache.*</package-name>
+  </prefer-application-packages>
+  <context-root>/lurin-rest-spring-security</context-root>
+</weblogic-web-app>
